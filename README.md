@@ -33,6 +33,7 @@ Create Classes
 
 Section 3
 Game Logic
+
 Step 1:
 - The player clicks a button to choose what to move. This pressing of the button calls a function.
 - This function that is called aquires:
