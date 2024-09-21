@@ -17,44 +17,67 @@ class Square:
         self.__board= board
         self.__graphic= None
         self.__square= None
-        self.__positions= {'a1':{'x':0, 'y':0},   'a2':{'x':0.25,'y':0},    'a3':{'x':0.5,'y':0},    'a4':{'x':0.75,'y':0},
-                           'b1':{'x':0,'y':0.25}, 'b2':{'x':0.25,'y':0.25}, 'b3':{'x':0.5,'y':0.25}, 'b4':{'x':0.75,'y':0.25},
-                           'c1':{'x':0,'y':0.5},  'c2':{'x':0.25,'y':0.5},  'c3':{'x':0.5,'y':0.5},  'c4':{'x':0.75,'y':0.5},
-                           'd1':{'x':0,'y':0.75}, 'd2':{'x':0.25,'y':0.75}, 'd3':{'x':0.5,'y':0.75}, 'd4':{'x':0.75,'y':0.75}} #Positions of Squares on the screen depending on its assigned coordinate
+        self.__positions= {'11':{'x':0, 'y':0},   '12':{'x':0.25,'y':0},    '13':{'x':0.5,'y':0},    '14':{'x':0.75,'y':0},
+                           '21':{'x':0,'y':0.25}, '22':{'x':0.25,'y':0.25}, '23':{'x':0.5,'y':0.25}, '24':{'x':0.75,'y':0.25},
+                           '31':{'x':0,'y':0.5},  '32':{'x':0.25,'y':0.5},  '33':{'x':0.5,'y':0.5},  '34':{'x':0.75,'y':0.5},
+                           '41':{'x':0,'y':0.75}, '42':{'x':0.25,'y':0.75}, '43':{'x':0.5,'y':0.75}, '44':{'x':0.75,'y':0.75}} #Positions of Squares on the screen depending on its assigned coordinate
         self.__fontSize= ctk.CTkFont(size=60)
-        self.__position= self.__positions[self.__coordinate]
-        self.__pieceColor= None
+        self.__position= self.__positions[str(self.__coordinate)]
+        self.__piece= None
+
+    def findMoves(self):
+        self.__piece.getMoves()
 
     def createSquareButton(self):        
-        self.__square = ctk.CTkButton(self.__board, width=126, height=126, text=self.__graphic, fg_color= self.__color, hover_color= 'grey', corner_radius= 3, font= self.__fontSize)
+        self.__square = ctk.CTkButton(self.__board, width=126, height=126, text=self.__graphic, fg_color= self.__color, hover_color= '#94b06c', corner_radius= 3, font= self.__fontSize, command= lambda: self.findMoves())
         self.__square.place(relx= self.__position['x'], rely=self.__position['y'])
 
     def updateGraphic(self):
-        self.__square.configure(text= self.__graphic, text_color= self.__pieceColor)
+        self.__square.configure(text= self.__graphic, text_color= self.__piece.getColor())
 
     def setGraphic(self, newGraphic):
         self.__graphic= newGraphic
         self.updateGraphic()
 
-    def setPieceColor(self, newPieceColor):
-        self.__pieceColor= newPieceColor
+    def setPiece(self, newPiece):
+        self.__piece= newPiece  
+
+    def getCoordinate(self):
+        return self.__coordinate
+    
+    def getPiece(self):
+        return self.__piece
 
 class Piece:
-    def __init__(self, name, square, color):
+    def __init__(self, name, square, color, player):
         self.__square= square
         self.__name= name
         self.__color= color
-        self.__piece= self.__name() #creates an instace of its 'type' class e.g the Castle/Queen Class so as to get its moves
+        self.__piece= self.__name(self) #creates an instace of its 'type' class e.g the Castle/Queen Class so as to get its moves
+        self.__player= player
 
     def getGraphic(self):        
         return self.__piece.getGraphics()[self.__color] #Returns a black-Pawn or white-King etc. to be assigned to the square
     
-    def updatePieceColor(self):
-        self.__square.setPieceColor(self.__color)
+    def updatePieceSquare(self):
+        self.__square.setPiece(self)
         self.__square.updateGraphic()
 
+    def getColor(self):
+        return self.__color
+    
+    def getMoves(self):
+        board= self.__player.getBoard()
+        self.__piece.getMoves(board)
+
+    def getSquare(self):
+        return self.__square
+    
+    def getPlayer(self):
+        return self.__player
+
 class Player:
-    def __init__(self, number):
+    def __init__(self, number, board):
         self.__number= number
         self.__pieces= []
         self.__pieceNames= {'1':[Castle, Queen, King, Castle, 
@@ -63,23 +86,30 @@ class Player:
                                  Castle, Queen, King, Castle]} #Board organization from top to bottom
         
         self.__colors= {'1':'black', '2':'white'}
+        self.__board= board
 
     def createPieces(self, squares):
         for square in squares:
             squareIndex= squares.index(square)
             pieceName= self.__pieceNames[self.__number][squareIndex] #Assigns the piece's type based on its initial Square position
             pieceColor= self.__colors[self.__number] #Assigns the piece's color based on the player
-            newPiece= Piece(pieceName, square, pieceColor)
-            newPiece.updatePieceColor()
+            newPiece= Piece(pieceName, square, pieceColor, self)
+            newPiece.updatePieceSquare()
             graphic= newPiece.getGraphic()
             square.setGraphic(graphic)            
             self.__pieces.append(newPiece)
+
+    def getBoard(self):
+        return self.__board
+    
+    def getNumber(self):
+        return self.__number
 
 class Board:
     def __init__(self):
         self.__players= []
         self.__squares= {}
-        self.__columns= ['a','b','c','d']
+        self.__columns= [1,2,3,4]
         self.__rows= [1,2,3,4]        
         self.__colors= ['#c6947a','#7c4529','#c6947a','#7c4529',
                         '#7c4529','#c6947a','#7c4529','#c6947a',
@@ -91,7 +121,7 @@ class Board:
         newColor= 0        
         for column in self.__columns:
             for row in self.__rows:
-                coordinate= f'{column}{row}' #Combining column and row to get unique Coordinate e.g 'a1', 'c4'
+                coordinate= int(f'{column}{row}') #Combining column and row to get unique Coordinate e.g 'a1', 'c4'
                 color= self.__colors[newColor]
                 newSquare= Square(coordinate, color, self.__board)
                 newSquare.createSquareButton()
@@ -103,7 +133,7 @@ class Board:
         middleSquare= len(squares) // 2 # Split the Squares into two parts        
         playerSquares= [squares[:middleSquare], squares[middleSquare:]] #A list with the initial Squares for the 2 players
         for i in range(2):
-            newPlayer= Player(str(i+1))
+            newPlayer= Player(str(i+1), self)
             newPlayer.createPieces(playerSquares[i]) #Each Player gets assigned the Squares for their Pieces at the start
             self.__players.append(newPlayer)
 
@@ -111,6 +141,9 @@ class Board:
         self.createSquares()
         self.createPlayers()
         self.__board.mainloop()
+
+    def getSquares(self):
+        return self.__squares
 
 chess= Board()
 chess.setup()
