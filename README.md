@@ -24,4 +24,7 @@ Create Classes
                              b) its current square (for display on the screen, and for movment logic)
                              c) its color, based on its player
 
+Section 2
+Game Logic
+
    
