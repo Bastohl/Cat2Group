@@ -42,8 +42,8 @@ Step 1:
 - c) the current positions of all the pieces on the board
 
 Step 2:
--The data aquired in step 1 is passed as parameters (coordinate, piece positions on the board) 
- to a method in the Class (in Moves.py) that contains the logic for the type of piece (e.g Pawn class, King class e.t.c)
+- The data aquired in step 1 is passed as parameters (coordinate, piece positions on the board) 
+  to a method in the Class (in Moves.py) that contains the logic for the type of piece (e.g Pawn class, King class e.t.c)
 
 Step 3:
 -The computer uses logic (that we will provide *biggest task*) to determine all the boxes that the player could move to on the board.
