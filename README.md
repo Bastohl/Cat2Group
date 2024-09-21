@@ -1,7 +1,7 @@
 MY SUGGESTION OF HOW WE SHOULD DO THIS PROJECT:
 
-Section 1
-Create Classes
+Section 1 (Create Classes)
+-
 1. Board Class
    - Creates Squares using the 'Square' class. It assigns:
    - a) position on UI screen,
@@ -31,9 +31,8 @@ Create Classes
    - b) its current square (for display on the screen, and for movment logic)
    - c) its color, based on its player
 
-Section 3
-Game Logic
-
+Section 3 (Game Logic)
+-
 Step 1
 - The player clicks a button to choose what to move. This pressing of the button calls a function.
 - This function that is called aquires:
@@ -63,5 +62,5 @@ Step 4
 - This would allow us to accomplish the last 2 steps
 
 Step 5
-- 
+
 
