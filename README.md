@@ -3,9 +3,9 @@ MY SUGGESTION OF HOW WE SHOULD DO THIS PROJECT:
 Section 1
 Create Classes
 1. Board Class
-   - Creates Squares using the 'Square' class. It assigns: [a) position on UI screen,
-                                                           b) coordinate (e.g. a1, b3 e.t.c),
-                                                           c) color]
+   - Creates Squares using the 'Square' class. It assigns: - a) position on UI screen,
+                                                           - b) coordinate (e.g. a1, b3 e.t.c),
+                                                           - c) color
    - Creates Players using the 'Player' class. It assigns the player's number. The number determines: a) color (e.g. 1->Black, 2->White),
                                                                                                       b) organization of pieces (e.g. castle, queen, king, castle, pawn, pawn, pawn, pawn ... if player is at the top of the board and vice versa if at the bottom)
 2. Player Class
