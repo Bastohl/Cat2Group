@@ -47,16 +47,21 @@ Step 2
 
 Step 3
 - The computer uses logic (that we will provide *biggest task*) to determine all the boxes that the player could move to on the board.
-- This step will NOT check whether there is a piece on it or not
--
+- This step will NOT check whether there is a piece on the squares or not
 - For example you have a Queen at the bottom-right (d4).
 - The computer will loop through the current positions of the pieces on the board.
 - It will pick out the points that fulfil the logic it is using; IN ORDER OF HOW THEY WERE CREATED.
-- This means that it will return top-left (a1), top-right (a4), b2, b4, c3, c4 (right above it), d1, d2, d3 (right on the left)
+- This means that it will return data in this order top-left (a1), top-right (a4), b2, b4, c3, c4 (right above it), d1, d2, d3 (right on the left)
 - This data will be used in step 4 
 
 Step 4
 - The computer will use more logic to create 'paths' from the identified squares
 - This is what i mean:
+- In step 3 we got data organized in order of how the squares were created
+- In this step, we take that data and form seperate 'paths' that the piece could take.
+- An example path for the Queen in d4 in step 3 would be -> [c3,b2,a1] (diagonal) or [c4,b4,a4] (upward)
+- This would allow us to accomplish the last 2 steps
+
+Step 5
 
 
