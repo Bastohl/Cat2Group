@@ -39,7 +39,7 @@ Section 2 (Creating classes to contain the unique logic for each piece)
    - The pawn/castle/queen/king's unique logic for movment and eating other pieces
    - Each piece created will be assigned one of these classes as its type
 
-Section 3 (Moving Logic) *Main part*
+Section 3 (Moving Logic)  *~Main part*
 -
 Step 1
 - The player clicks a button to choose what to move. This pressing of the button calls a function.
