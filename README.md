@@ -1,6 +1,6 @@
 MY SUGGESTION OF HOW WE SHOULD DO THIS PROJECT:
 
-Section 1 (Create Classes)
+Section 1 (Create Classes)  *DONE*
 -
 1. Board Class
    - Creates Squares using the 'Square' class. It assigns:
@@ -31,7 +31,7 @@ Section 1 (Create Classes)
    - b) its current square (for display on the screen, and for movment logic)
    - c) its color, based on its player
 
-Section 2 (Creating classes to contain the unique logic for each piece)
+Section 2 (Creating classes to contain the unique logic for each piece)  *DONE*
 -
 - Pawn/Castle/Queen/King Class
    - This will contain the graphic for the pawn/castle/queen/king,
