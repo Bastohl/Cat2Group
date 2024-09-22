@@ -15,7 +15,7 @@ class Square:
         self.__coordinate= coordinate
         self.__color= color
         self.__board= board
-        self.__graphic= None
+        self.__graphic= None # the image for the piece e.g ♜
         self.__square= None
         self.__positions= {'11':{'x':0, 'y':0},   '12':{'x':0.25,'y':0},    '13':{'x':0.5,'y':0},    '14':{'x':0.75,'y':0},
                            '21':{'x':0,'y':0.25}, '22':{'x':0.25,'y':0.25}, '23':{'x':0.5,'y':0.25}, '24':{'x':0.75,'y':0.25},
@@ -32,15 +32,19 @@ class Square:
         self.__square = ctk.CTkButton(self.__board, width=126, height=126, text=self.__graphic, fg_color= self.__color, hover_color= '#94b06c', corner_radius= 3, font= self.__fontSize, command= lambda: self.findMoves())
         self.__square.place(relx= self.__position['x'], rely=self.__position['y'])
 
-    def updateGraphic(self):
-        self.__square.configure(text= self.__graphic, text_color= self.__piece.getColor())
+    def updateLook(self):
+        self.__square.configure(text= self.__graphic, text_color= self.__piece.getColor(), fg_color= self.__color) #once a piece is created, or moved to a new location, the square button is updated
+    
+    def setColor(self, newColor):
+        self.__square.configure(fg_color= newColor)
 
     def setGraphic(self, newGraphic):
         self.__graphic= newGraphic
-        self.updateGraphic()
+        self.updateLook()
 
     def setPiece(self, newPiece):
-        self.__piece= newPiece  
+        self.__piece= newPiece          
+        self.findMoves()
 
     def getCoordinate(self):
         return self.__coordinate
@@ -61,28 +65,39 @@ class Piece:
     
     def updatePieceSquare(self):
         self.__square.setPiece(self)
-        self.__square.updateGraphic()
+        self.__square.updateLook()
 
     def getColor(self):
         return self.__color
     
     def getMoves(self):
         board= self.__player.getBoard()
-        self.__piece.getMoves(board)
+        moves= self.__piece.getMoves(board)
+        for square in list(board.getSquares().values()):
+            if square.getPiece():
+                square.updateLook()
+        for square in moves:
+            self.__square.setColor('grey')
+            if square.getPiece():
+                square.setColor('green')
+        #print(moves, '\n')
 
     def getSquare(self):
         return self.__square
     
     def getPlayer(self):
         return self.__player
+    
+    def getPiece(self):
+        return self.__piece
 
 class Player:
     def __init__(self, number, board):
         self.__number= number
         self.__pieces= []
         self.__pieceNames= {'1':[Castle, Queen, King, Castle, 
-                                 Pawn, Pawn, Pawn, Pawn], 
-                            '2':[Pawn, Pawn, Pawn, Pawn, 
+                                 Pawn, Pawn, Castle, Pawn], 
+                            '2':[Pawn, Queen, King, Pawn, 
                                  Castle, Queen, King, Castle]} #Board organization from top to bottom
         
         self.__colors= {'1':'black', '2':'white'}
