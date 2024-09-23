@@ -79,16 +79,19 @@ class Castle:
     def __init__(self, piece):
         self.__graphic= {'black':'♖', 'white':'♜'}
         self.__moves= []
-        self.__allowedMoves= {'forward':[[-1,0],[-2,0],[-3,0]], 'backward':[[1,0],[2,0],[3,0]], 
-                              'right':[[0,-1],[0,-2],[0,-3]], 'left':[[0,1],[0,2],[0,3]]}
+        self.__allowedMoves= {'1':{'forward':[[-1,0],[-2,0],[-3,0]], 'backward':[[1,0],[2,0],[3,0]], 
+                              'right':[[0,-1],[0,-2],[0,-3]], 'left':[[0,1],[0,2],[0,3]]},
+                              '2':{'forward':[[1,0],[2,0],[3,0]], 'backward':[[-1,0],[-2,0],[-3,0]], 
+                              'right':[[0,1],[0,2],[0,3]], 'left':[[0,-1],[0,-2],[0,-3]]}}
         self.__board= None
         self.__piece= piece
         self.__allowedSquares= None
         self.__paths= {}
 
     def findEnd(self):
-        for direction in list(self.__allowedSquares.keys()):
-            squares= self.__allowedSquares[direction]
+        playerNumber= self.__piece.getPlayer().getNumber() 
+        for direction in list(self.__allowedSquares[playerNumber].keys()):
+            squares= self.__allowedSquares[playerNumber][direction]
             remove= False
             for square in squares:
                 pieceOnSquare= square.getPiece()
@@ -96,10 +99,11 @@ class Castle:
                     squares.remove(square)                    
                 if pieceOnSquare:                    
                     remove= True                
-            self.__allowedSquares[direction]= squares
+            self.__allowedSquares[playerNumber][direction]= squares
 
-    def endPath(self, move, allowedMove):  
-        path= self.__paths[allowedMove]      
+    def endPath(self, move, allowedMove): 
+        playerNumber= self.__piece.getPlayer().getNumber()  
+        path= self.__paths[playerNumber][allowedMove]      
         moveIndex= path.index(move)
         pastEnd= len(path)-moveIndex
         for i in range(pastEnd):
@@ -120,12 +124,13 @@ class Castle:
     def checkAllowed(self, square):
         squareCoordinate= list(map(int, str(square.getCoordinate())))
         pieceCoordinate= list(map(int, str(self.__piece.getSquare().getCoordinate())))
-        move= [a - b for a, b in zip(squareCoordinate, pieceCoordinate)]          
-        for moves in list(self.__allowedMoves.values()):
-            allowedMove= next(direction for direction, vector in self.__allowedMoves.items() if vector == moves)
+        move= [a - b for a, b in zip(squareCoordinate, pieceCoordinate)]   
+        playerNumber= self.__piece.getPlayer().getNumber()       
+        for moves in list(self.__allowedMoves[playerNumber].values()):
+            allowedMove= next(direction for direction, vector in self.__allowedMoves[playerNumber].items() if vector == moves)
             if move in moves:                
                 condition= self.checkSquareCondition(square, allowedMove, move)                
-                if condition and (move in self.__paths[allowedMove]):
+                if condition and (move in self.__paths[playerNumber][allowedMove]):
                     self.__allowedSquares[allowedMove].append(square)                   
 
     def getSquares(self):        
@@ -133,15 +138,19 @@ class Castle:
             self.checkAllowed(square)
 
     def getMoves(self, board):
+        playerNumber= self.__piece.getPlayer().getNumber() 
         self.__moves= []
-        for direction in list(self.__allowedMoves.keys()):
-            self.__paths[direction]= self.__allowedMoves[direction]
-        self.__allowedSquares= {'forward':[],'backward':[],
-                                'right':[],'left':[]}
+        for i in range(2):
+            for direction in list(self.__allowedMoves[str(1+1)].keys()):
+                self.__paths[str(i+1)][direction]= self.__allowedMoves[str(i+1)][direction]
+        self.__allowedSquares= {'1':{'forward':[],'backward':[],
+                                'right':[],'left':[]},
+                                '2':{'forward':[],'backward':[],
+                                'right':[],'left':[]}}
         self.__board= board
         self.getSquares()
-        self.findEnd()              
-        for squares in list(self.__allowedSquares.values()):            
+        self.findEnd()                          
+        for squares in list(self.__allowedSquares[playerNumber].values()):            
             for square in squares:                
                 self.__moves.append(square)        
         return self.__moves
