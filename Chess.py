@@ -79,8 +79,8 @@ class Piece:
         for square in moves:
             self.__square.setColor('grey')
             if square.getPiece():
-                square.setColor('green')
-        #print(moves, '\n')
+                square.setColor('green')        
+        print(moves, '\n')
 
     def getSquare(self):
         return self.__square
@@ -96,8 +96,8 @@ class Player:
         self.__number= number
         self.__pieces= []
         self.__pieceNames= {'1':[Castle, Queen, King, Castle, 
-                                 Pawn, Pawn, Castle, Pawn], 
-                            '2':[Pawn, Queen, King, Pawn, 
+                                 Pawn, Queen, Castle, Pawn], 
+                            '2':[Pawn, Queen, Castle, Pawn, 
                                  Castle, Queen, King, Castle]} #Board organization from top to bottom
         
         self.__colors= {'1':'black', '2':'white'}
