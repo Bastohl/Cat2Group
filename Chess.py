@@ -22,6 +22,10 @@ class Square:
             self.__square.configure(state= 'enabled')
         if self.__piece:
             self.__board.setState()
+        if self.__board.getState():
+            for square in self.__board.getSquares().values():                
+                square.getSquare().configure(state= 'normal')
+                square.updateLook()
 
     def createSquareButton(self):
         self.__square = ctk.CTkButton(self.__board.getBoard(), width=100, height=100, text=self.__graphic, fg_color= self.__color, 
@@ -76,7 +80,7 @@ class Piece:
     def getMoves(self):
         board= self.__player.getBoard()
         moves= self.__piece.getMoves(board)
-        for square in list(board.getSquares().values()):            
+        for square in list(board.getSquares().values()):
             square.updateLook()
         for square in moves:
             self.__square.setColor('grey')            
@@ -160,7 +164,7 @@ class Board:
             newPlayer.createPieces(playerSquares[i]) #Each Player gets assigned the Squares for their Pieces at the start
             self.__players.append(newPlayer)
         for square in self.__squares.values():
-            square.getSquare().configure(state= 'enabled')
+            square.getSquare().configure(state= 'normal')
 
     def setup(self):
         self.createSquares()
