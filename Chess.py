@@ -1,13 +1,4 @@
-'''
-# ♔♕♙♖ ♚♛♟♜
-# Composition -> Board has squares, Piece has square, Player has pieces, Board has Players
-# Encapsulation -> Data hiding using '__' before attributes
-# Abstraction -> Using get and set methods
-# Association -> Squares-Board (many-1), Square-Piece (1-1), Players-Board (many-1), Player-Pieces (1-many)), Delegation(Moves File
-# Delegation and Dependency -> using Moves.py to store logic behind moves
-'''
-
-from Moves import Pawn, Castle, King, Queen
+from Moves import Pawn, Castle, King, Queen, Empty
 import customtkinter as ctk
 
 class Square:
@@ -29,11 +20,15 @@ class Square:
         self.__piece.getMoves()
 
     def createSquareButton(self):        
-        self.__square = ctk.CTkButton(self.__board, width=126, height=126, text=self.__graphic, fg_color= self.__color, hover_color= '#94b06c', corner_radius= 3, font= self.__fontSize, command= lambda: self.findMoves())
+        self.__square = ctk.CTkButton(self.__board, width=100, height=100, text=self.__graphic, fg_color= self.__color, 
+                                      hover_color= '#94b06c', corner_radius= 3, font= self.__fontSize, command= lambda: self.findMoves())
         self.__square.place(relx= self.__position['x'], rely=self.__position['y'])
 
     def updateLook(self):
-        self.__square.configure(text= self.__graphic, text_color= self.__piece.getColor(), fg_color= self.__color) #once a piece is created, or moved to a new location, the square button is updated
+        pieceColor= self.__color
+        if self.__piece:
+            pieceColor= self.__piece.getColor()
+        self.__square.configure(text= self.__graphic, text_color= pieceColor, fg_color= self.__color) #once a piece is created, or moved to a new location, the square button is updated
     
     def setColor(self, newColor):
         self.__square.configure(fg_color= newColor)
@@ -53,7 +48,7 @@ class Square:
         return self.__piece
 
 class Piece:
-    def __init__(self, name, square, color, player):
+    def __init__(self, name, square, color, player):        
         self.__square= square
         self.__name= name
         self.__color= color
@@ -64,8 +59,9 @@ class Piece:
         return self.__piece.getGraphics()[self.__color] #Returns a black-Pawn or white-King etc. to be assigned to the square
     
     def updatePieceSquare(self):
-        self.__square.setPiece(self)
-        self.__square.updateLook()
+        if self.__square:
+            self.__square.setPiece(self)
+            self.__square.updateLook()
 
     def getColor(self):
         return self.__color
@@ -73,14 +69,12 @@ class Piece:
     def getMoves(self):
         board= self.__player.getBoard()
         moves= self.__piece.getMoves(board)
-        for square in list(board.getSquares().values()):
-            if square.getPiece():
-                square.updateLook()
+        for square in list(board.getSquares().values()):            
+            square.updateLook()
         for square in moves:
-            self.__square.setColor('grey')
-            if square.getPiece():
-                square.setColor('green')        
-        print(moves, '\n')
+            self.__square.setColor('grey')            
+            square.setColor('#68a030')        
+        #print(moves, '\n')
 
     def getSquare(self):
         return self.__square
@@ -95,10 +89,10 @@ class Player:
     def __init__(self, number, board):
         self.__number= number
         self.__pieces= []
-        self.__pieceNames= {'1':[Castle, Queen, King, Castle, 
-                                 Pawn, Queen, Castle, Pawn], 
-                            '2':[Pawn, Queen, Castle, Pawn, 
-                                 Castle, Queen, King, Castle]} #Board organization from top to bottom
+        self.__pieceNames= {'1':[Castle, Queen, King, Castle,
+                                 Pawn, Pawn, Empty, Queen], 
+                            '2':[Pawn, Queen, Empty, Pawn,
+                                 Castle, Queen, Castle, King]} #Board organization from top to bottom
         
         self.__colors= {'1':'black', '2':'white'}
         self.__board= board
@@ -108,10 +102,13 @@ class Player:
             squareIndex= squares.index(square)
             pieceName= self.__pieceNames[self.__number][squareIndex] #Assigns the piece's type based on its initial Square position
             pieceColor= self.__colors[self.__number] #Assigns the piece's color based on the player
+            if not pieceName.present:
+                square= None
             newPiece= Piece(pieceName, square, pieceColor, self)
             newPiece.updatePieceSquare()
             graphic= newPiece.getGraphic()
-            square.setGraphic(graphic)            
+            if newPiece.getSquare():
+                square.setGraphic(graphic)            
             self.__pieces.append(newPiece)
 
     def getBoard(self):
@@ -130,7 +127,7 @@ class Board:
                         '#7c4529','#c6947a','#7c4529','#c6947a',
                         '#c6947a','#7c4529','#c6947a','#7c4529',
                         '#7c4529','#c6947a','#7c4529','#c6947a']  #Alternating Square colors; in hex format
-        self.__board= ctk.CTk(); self.__board.geometry('500x500'); self.__board.title('4x4 Silverman Chess')
+        self.__board= ctk.CTk(); self.__board.geometry('400x400'); self.__board.title('4x4 Silverman Chess')
 
     def createSquares(self):
         newColor= 0        

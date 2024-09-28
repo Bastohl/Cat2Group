@@ -1,4 +1,5 @@
 class Pawn:
+    present= True
     def __init__(self, piece):
         self.__graphic= {'black':'♙', 'white':'♟'}        
         self.__allowedMoves= {'1':{'forward': [1,0], 'diagonalL': [1,-1], 'diagonalR': [1,1]},
@@ -6,6 +7,10 @@ class Pawn:
         self.__board= None
         self.__piece= piece
         self.__allowedSquares= []
+        self.__present= Pawn.present
+
+    def getPresent(self):
+        return self.__present
 
     def checkSquareCondition(self, square, move):
         conditions = {'forward': lambda x: x is None, 'diagonalL': lambda x: x is not None, 'diagonalR': lambda x: x is not None }
@@ -37,6 +42,7 @@ class Pawn:
         return self.__allowedSquares
 
 class King:
+    present= True
     def __init__(self, piece):
         self.__graphic= {'black':'♔', 'white':'♚'}
         self.__allowedMoves= {'forward': [-1,0], 'diagonal1': [-1,-1], 'diagonal2': [-1,1],
@@ -45,10 +51,15 @@ class King:
         self.__board= None
         self.__piece= piece
         self.__allowedSquares= []
+        self.__present= King.present
+
+    def getPresent(self):
+        return self.__present
 
     def checkSquareCondition(self, square):
         pieceOnSquare= square.getPiece()
         condition= True
+        #print(pieceOnSquare)
         if pieceOnSquare:
             condition= (pieceOnSquare.getPlayer().getNumber() != self.__piece.getPlayer().getNumber())                
         return condition
@@ -72,10 +83,11 @@ class King:
     def getMoves(self, board):        
         self.__allowedSquares= []
         self.__board= board
-        self.getSquares()
+        self.getSquares()        
         return self.__allowedSquares
 
 class Castle:
+    present= True
     def __init__(self, piece):
         self.__graphic= {'black':'♖', 'white':'♜'}
         self.__moves= []
@@ -85,6 +97,10 @@ class Castle:
         self.__piece= piece
         self.__allowedSquares= None
         self.__paths= {}
+        self.__present= Castle.present
+
+    def getPresent(self):
+        return self.__present
 
     def findEnd(self):
         playerNumber= self.__piece.getPlayer().getNumber()
@@ -110,12 +126,13 @@ class Castle:
 
     def checkSquareCondition(self, square, allowedMove, move):
         pieceOnSquare= square.getPiece()
-        condition= True        
+        condition= True       
+        #print(pieceOnSquare) 
         if pieceOnSquare:
             condition= (pieceOnSquare.getPlayer().getNumber() != self.__piece.getPlayer().getNumber())
         if not condition:
             pass
-            #self.endPath(move, allowedMove)
+            self.endPath(move, allowedMove)
         return condition
 
     def getGraphics(self):
@@ -147,10 +164,12 @@ class Castle:
         self.findEnd()              
         for squares in list(self.__allowedSquares.values()):            
             for square in squares:                
-                self.__moves.append(square)        
+                self.__moves.append(square)  
+        print(self.__moves)      
         return self.__moves
 
 class Queen:
+    present= True
     def __init__(self, piece):
         self.__graphic= {'black':'♕', 'white':'♛'}
         self.__moves= []
@@ -161,6 +180,10 @@ class Queen:
         self.__piece= piece
         self.__allowedSquares= None
         self.__paths= {}
+        self.__present= Queen.present
+
+    def getPresent(self):
+        return self.__present
 
     def findEnd(self):
         playerNumber= self.__piece.getPlayer().getNumber()
@@ -171,11 +194,11 @@ class Queen:
             remove= False
             for square in squares:
                 pieceOnSquare= square.getPiece()
-                if remove:
+                if remove:                    
                     squares.remove(square)                    
                 if pieceOnSquare:                    
                     remove= True                
-            self.__allowedSquares[direction]= squares
+            self.__allowedSquares[direction]= squares            
 
     def endPath(self, move, allowedMove):  
         path= self.__paths[allowedMove]      
@@ -185,8 +208,9 @@ class Queen:
             path.pop()        
 
     def checkSquareCondition(self, square, allowedMove, move):
-        pieceOnSquare= square.getPiece()
-        condition= True        
+        pieceOnSquare= square.getPiece()        
+        condition= True
+        #print(pieceOnSquare)
         if pieceOnSquare:
             condition= (pieceOnSquare.getPlayer().getNumber() != self.__piece.getPlayer().getNumber())
         if not condition:
@@ -223,5 +247,20 @@ class Queen:
         self.findEnd()        
         for squares in list(self.__allowedSquares.values()):            
             for square in squares:
-                self.__moves.append(square)
+                self.__moves.append(square)        
         return self.__moves
+    
+class Empty:
+    present= False
+    def __init__(self, piece):
+        self.__graphic= {'black':None, 'white':None}
+        self.__present= Empty.present
+
+    def getPresent(self):
+        return self.__present
+
+    def getGraphics(self):
+        return self.__graphic
+    
+    def getMoves(self, board):
+        return []
