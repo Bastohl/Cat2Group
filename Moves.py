@@ -161,11 +161,10 @@ class Castle:
                                 'right':[],'left':[]}
         self.__board= board
         self.getSquares()
-        self.findEnd()              
-        for squares in list(self.__allowedSquares.values()):            
-            for square in squares:                
-                self.__moves.append(square)  
-        print(self.__moves)      
+        self.findEnd()
+        for squares in list(self.__allowedSquares.values()):
+            for square in squares:
+                self.__moves.append(square)             
         return self.__moves
 
 class Queen:

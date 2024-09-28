@@ -17,10 +17,14 @@ class Square:
         self.__piece= None
 
     def findMoves(self):
-        self.__piece.getMoves()
+        if self.__board.getState() and self.__piece:
+            self.__piece.getMoves()
+            self.__square.configure(state= 'enabled')
+        if self.__piece:
+            self.__board.setState()
 
-    def createSquareButton(self):        
-        self.__square = ctk.CTkButton(self.__board, width=100, height=100, text=self.__graphic, fg_color= self.__color, 
+    def createSquareButton(self):
+        self.__square = ctk.CTkButton(self.__board.getBoard(), width=100, height=100, text=self.__graphic, fg_color= self.__color, 
                                       hover_color= '#94b06c', corner_radius= 3, font= self.__fontSize, command= lambda: self.findMoves())
         self.__square.place(relx= self.__position['x'], rely=self.__position['y'])
 
@@ -46,6 +50,9 @@ class Square:
     
     def getPiece(self):
         return self.__piece
+    
+    def getSquare(self):
+        return self.__square
 
 class Piece:
     def __init__(self, name, square, color, player):        
@@ -73,7 +80,10 @@ class Piece:
             square.updateLook()
         for square in moves:
             self.__square.setColor('grey')            
-            square.setColor('#68a030')        
+            square.setColor('#68a030')
+        for square in board.getSquares().values():
+            if square not in moves:
+                square.getSquare().configure(state= 'disabled')        
         #print(moves, '\n')
 
     def getSquare(self):
@@ -128,6 +138,7 @@ class Board:
                         '#c6947a','#7c4529','#c6947a','#7c4529',
                         '#7c4529','#c6947a','#7c4529','#c6947a']  #Alternating Square colors; in hex format
         self.__board= ctk.CTk(); self.__board.geometry('400x400'); self.__board.title('4x4 Silverman Chess')
+        self.__state= True
 
     def createSquares(self):
         newColor= 0        
@@ -135,7 +146,7 @@ class Board:
             for row in self.__rows:
                 coordinate= int(f'{column}{row}') #Combining column and row to get unique Coordinate e.g 'a1', 'c4'
                 color= self.__colors[newColor]
-                newSquare= Square(coordinate, color, self.__board)
+                newSquare= Square(coordinate, color, self)
                 newSquare.createSquareButton()
                 self.__squares[coordinate]= newSquare #Add the coordinate and its Square to the Squares dictionary
                 newColor+= 1
@@ -148,6 +159,8 @@ class Board:
             newPlayer= Player(str(i+1), self)
             newPlayer.createPieces(playerSquares[i]) #Each Player gets assigned the Squares for their Pieces at the start
             self.__players.append(newPlayer)
+        for square in self.__squares.values():
+            square.getSquare().configure(state= 'enabled')
 
     def setup(self):
         self.createSquares()
@@ -156,6 +169,18 @@ class Board:
 
     def getSquares(self):
         return self.__squares
+    
+    def getState(self):
+        return self.__state
+    
+    def getBoard(self):
+        return self.__board
+    
+    def setState(self):
+        if self.__state:
+            self.__state= False
+        else:
+            self.__state= True
 
 chess= Board()
 chess.setup()
